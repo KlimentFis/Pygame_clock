@@ -29,18 +29,27 @@ class Clock():
 			':' : [(1,1), (1,3)]
 		}
 
+	def Draw(self, x, y, i, color):
+		pygame.draw.rect(self.display, color, (x * self.size + (self.size * 1) + i * self.size * 4 + 1, y * self.size + (self.size * 1) + 1, self.size-2, self.size-2))
+
+
 	def Draw_number(self):
 		for i in range(len(self.time)):
 			for x in range(self.width):
 				for y in range(self.height):
 					if (x, y) in self.char[self.time[i:i+1]]:	
-						pygame.draw.rect(self.display, self.color, (x * self.size + (self.size * 1) + i * self.size * 4 + 1, y * self.size + (self.size * 1) + 1, self.size-2, self.size-2))
+						Clock.Draw(self, x, y, i, self.color)
 
 	def Get_time(self):
 		self.time = datetime.now().strftime("%H:%M")
 
 	def Fill_display(self):
 		self.display.set_colorkey(self.bg_color)
+
+	def Tick(self):
+		Clock.Draw(self, 9, 1, 0, self.bg_color)
+		Clock.Draw(self, 9, 3, 0, self.bg_color)
+		
 
 Game_over = False
 while not Game_over:
@@ -49,6 +58,9 @@ while not Game_over:
 	my_clock.Fill_display()
 	my_clock.Get_time()
 	my_clock.Draw_number()
+	pygame.display.update()
+	my_clock.Tick()
+	sleep(1)
 	pygame.display.update()
 	
 	for event in pygame.event.get():
