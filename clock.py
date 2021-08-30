@@ -1,7 +1,6 @@
 import pygame
 from datetime import datetime
 from time import sleep
-from random import randint
 
 pygame.init()
 
