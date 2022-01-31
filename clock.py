@@ -1,10 +1,12 @@
-from random import randint
-from datetime import datetime
+from random import randint, choice
 import pygame
+from datetime import datetime
+
+USA_Time_format = 1 # 12h format with AM/PM (1 or 0)
+Seconds = 1 # seconds on the clock (1 or 0)
 
 class Clock_face():
 	def __init__(self, app):
-		self.time = "start"
 		self.all_char = {
 			'0' : [(0,0), (0,1), (0,2), (0,3), (0,4), (1,0), (1,4), (2,0), (2,1), (2,2), (2,3), (2,4)],
 			'1' : [(2,0), (2,1), (2,2), (2,3), (2,4)],
@@ -20,15 +22,33 @@ class Clock_face():
 			"s" : [(0,0), (0,1), (0,2), (0,4), (1,0), (1,2), (1,4), (2,0), (2,2), (2,3), (2,4)],
 			"t" : [(0,0), (1,0), (2,0), (1,1), (1,2), (1,3), (1,4)],
 			"a" : [(1,0), (1,2), (0,1), (0,2), (0,3), (0,4), (2,1), (2,2), (2,3), (2,4)],
-			"r" : [(0,0), (0,1), (0,2), (0,3), (0,4), (1,0), (1,2), (1,3), (2,0), (2,1), (2,2), (2,4)]
+			"r" : [(0,0), (0,1), (0,2), (0,3), (0,4), (1,0), (1,2), (1,3), (2,0), (2,1), (2,2), (2,4)],
+			"m" : [(0,0), (0,1), (0,2), (0,3), (0,4), (1,1), (2,0), (2,1), (2,2), (2,3), (2,4)],
+			"p" : [(0,0), (0,1), (0,2), (0,3), (0,4), (1,0), (1,2), (2,0), (2,1), (2,2)],
+			" " : []
 		}
+
+		if app.element_count % 2 == 1:
+			self.time = " " * ((app.element_count - 5) // 2) + "start" + " " * ((app.element_count - 5) // 2)
+		else:
+			self.time = "".join([str(choice([i for i in self.all_char.keys()])) for i in range(app.element_count)])
+
 		self.chars = [Time_char(app, i, self.all_char[char]) for i, char in enumerate(self.time)]
 
 	def draw(self):
 		[char.draw(app) for char in self.chars]
 
 	def update(self):
-		self.time = datetime.now().strftime("%H:%M")
+		if Seconds == 0:
+			self.time = datetime.now().strftime("%M")
+		else:
+			self.time = datetime.now().strftime("%M:%S") 
+
+		if USA_Time_format == 0:
+			self.time = datetime.now().strftime("%H:") + self.time
+		else:
+			self.time = datetime.now().strftime("%I:") + self.time + datetime.now().strftime(":%p").lower()
+
 		[char.update(self.all_char[self.time[i]]) for i, char in enumerate(self.chars)]
 
 class Time_char():
@@ -47,15 +67,16 @@ class Time_char():
 		# Random color 
 		# [pygame.draw.rect(app.display, self.color, ((self.x + x1) * app.cell_size + 1, (self.y + y1) * app.cell_size + 1, app.cell_size - 2, app.cell_size - 2)) for x1, y1 in self.char]
 
+
 	def update(self, char):
 		self.char = char
 
 class App():
 	def __init__(self):
 		self.cell_size = 20
-		self.element_count = 5
-		self.row = 21 #self.element_count * 3 + self.element_count + 1
-		self.col = 7 #7
+		self.element_count = 5 + Seconds * 3 + USA_Time_format * 3
+		self.row = self.element_count * 3 + self.element_count + 1 #21
+		self.col = 9 #7
 		self.width = self.cell_size * self.row
 		self.height = self.cell_size * self.col
 		self.display = pygame.display.set_mode((self.width, self.height))
@@ -67,8 +88,8 @@ class App():
 			self.clock.tick(15)
 			self.display.fill(pygame.Color("black"))
 			My_clock.draw()
-			My_clock.update()
 			pygame.display.update()
+			My_clock.update()
 			[exit() for i in pygame.event.get() if i.type == pygame.QUIT]
 
 if __name__ == '__main__':
