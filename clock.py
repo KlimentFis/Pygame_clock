@@ -2,8 +2,9 @@ from random import randint, choice
 import pygame
 from datetime import datetime
 
-USA_Time_format = 1 # 12h format with AM/PM (1 or 0)
-Seconds = 1 # seconds on the clock (1 or 0)
+USA_TIME_FORMAT = 1 # 12h format with AM/PM (1 or 0)
+SECOND = 1 # SECOND on the clock (1 or 0)
+SIZE = 45
 
 class Clock_face():
 	def __init__(self, app):
@@ -39,12 +40,12 @@ class Clock_face():
 		[char.draw(app) for char in self.chars]
 
 	def update(self):
-		if Seconds == 0:
+		if SECOND == 0:
 			self.time = datetime.now().strftime("%M")
 		else:
 			self.time = datetime.now().strftime("%M:%S") 
 
-		if USA_Time_format == 0:
+		if USA_TIME_FORMAT == 0:
 			self.time = datetime.now().strftime("%H:") + self.time
 		else:
 			self.time = datetime.now().strftime("%I:") + self.time + datetime.now().strftime(":%p").lower()
@@ -73,8 +74,9 @@ class Time_char():
 
 class App():
 	def __init__(self):
-		self.cell_size = 20
-		self.element_count = 5 + Seconds * 3 + USA_Time_format * 3
+		self.cell_size = SIZE
+		pygame.display.set_caption('МОИ СУПЕР ЧАСЫ С ГРАДИЕНТОМ')
+		self.element_count = 5 + SECOND * 3 + USA_TIME_FORMAT * 3
 		self.row = self.element_count * 3 + self.element_count + 1 #21
 		self.col = 9 #7
 		self.width = self.cell_size * self.row
