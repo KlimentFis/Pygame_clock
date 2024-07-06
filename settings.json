@@ -1,9 +1,9 @@
 {
     "Clock":
     {
-        "Size": 35,
+        "Size": 40,
         "Circle": 0,
         "AM": 0,
-        "Seconds": 0
+        "Seconds": 1
     }
 }

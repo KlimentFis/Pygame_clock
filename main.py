@@ -9,7 +9,6 @@ def get_settings():
 
 	clock_params = data.get("Clock", {})
 
-	# Вывод параметров
 	size = clock_params.get("Size")
 	circle = clock_params.get("Circle")
 	am = clock_params.get("AM")
