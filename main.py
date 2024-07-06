@@ -1,11 +1,20 @@
 from random import randint, choice
 import pygame
 from datetime import datetime
+import pygame
+import json
 
-USA_TIME_FORMAT = 0 # 12h format with AM/PM (1 or 0)
-SECOND = 1 # SECOND on the clock (1 or 0)
-SIZE = 45
-BG_COLOR = ()
+def get_settings():
+	with open('settings.json', 'r') as file:
+		data = json.load(file)
+
+	clock_params = data.get("Clock", {})
+
+	size = clock_params.get("Size")
+	circle = clock_params.get("Circle")
+	am = clock_params.get("AM")
+	seconds = clock_params.get("Seconds")
+	return (am, seconds, size)
 
 class Clock_face():
 	def __init__(self, app):
@@ -37,12 +46,11 @@ class Clock_face():
 
 		self.chars = [Time_char(app, i, self.all_char[char]) for i, char in enumerate(self.time)]
 
-	def draw(self, add):
-		
-		[char.draw(app, add) for char in self.chars]
+	def draw(self):
+		[char.draw(app) for char in self.chars]
 
 	def update(self):
-		if SECOND == 0:
+		if SECONDS == 0:
 			self.time = datetime.now().strftime("%M")
 		else:
 			self.time = datetime.now().strftime("%M:%S") 
@@ -62,17 +70,9 @@ class Time_char():
 		self.color = (chanel(), chanel(), chanel()) 
 		self.char = char
 
-	def draw(self, app, add):
+	def draw(self, app):
 		# Rainbow 1
-		# [pygame.draw.rect(app.display, (255 // app.row * (self.x + x1 + add), 255 // app.col * (self.y + y1), 255 // app.width // app.height * (self.x + x1) * (self.y + y1)), ((self.x + x1) * app.cell_size + 1, (self.y + y1) * app.cell_size + 1, app.cell_size - 2, app.cell_size - 2)) for x1, y1 in self.char]
-		[pygame.draw.rect(app.display, (
-			(255 * ((self.x + x1 + add) % app.row) // app.row) % 255, 
-			(255 * ((self.y + y1 + add) % app.col) // app.col) % 255,
-			255 * ((self.x + x1) * (self.y + y1) // (app.width * app.height))
-			), 
-			((self.x + x1) * app.cell_size + 1, 
-			(self.y + y1) * app.cell_size + 1, app.cell_size - 2, app.cell_size - 2)) for x1, y1 in self.char]
-		# print(add)
+		[pygame.draw.rect(app.display, (255 // app.row * (self.x + x1), 255 // app.col * (self.y + y1), 255 // app.width // app.height * (self.x + x1) * (self.y + y1)), ((self.x + x1) * app.cell_size + 1, (self.y + y1) * app.cell_size + 1, app.cell_size - 2, app.cell_size - 2)) for x1, y1 in self.char]
 		# Rainbow 2
 		# [pygame.draw.rect(app.display, (255 // app.row * self.x, 255 // app.col * (self.y + 6), 255 // app.width // app.height * (self.x + x1) * (self.y + y1)), ((self.x + x1) * app.cell_size + 1, (self.y + y1) * app.cell_size + 1, app.cell_size - 2, app.cell_size - 2)) for x1, y1 in self.char]
 		# Random color 
@@ -84,34 +84,31 @@ class Time_char():
 
 class App():
 	def __init__(self):
-		self.cell_size = SIZE
-		pygame.display.set_caption('МОИ СУПЕР ЧАСЫ С ГРАДИЕНТОМ')
-		self.element_count = 5 + SECOND * 3 + USA_TIME_FORMAT * 3
+		self.cell_size = CELL_SIZE
+		self.element_count = 5 + SECONDS * 3 + USA_TIME_FORMAT * 3
 		self.row = self.element_count * 3 + self.element_count + 1 #21
 		self.col = 9 #7
 		self.width = self.cell_size * self.row
 		self.height = self.cell_size * self.col
 		self.display = pygame.display.set_mode((self.width, self.height))
 		self.clock = pygame.time.Clock()
-		self.add = 0
-		self.k = 1
 
 	def run(self):
 		My_clock = Clock_face(self)
 		while True:
-			if self.add == 256:
-				k = -1
-			elif self.add == 0:
-				k = 1
 			self.clock.tick(15)
 			self.display.fill(pygame.Color("black"))
-			My_clock.draw(self.add)
+			My_clock.draw()
 			pygame.display.update()
 			My_clock.update()
-			self.add = self.add + k
-			print(self.add)
 			[exit() for i in pygame.event.get() if i.type == pygame.QUIT]
 
 if __name__ == '__main__':
+	# USA_TIME_FORMAT = 0  # 12h format with AM/PM (1 or 0)
+	# SECONDS = 1  # seconds on the clock (1 or 0)
+	# CELL_SIZE = 35
+
+	USA_TIME_FORMAT, SECONDS, CELL_SIZE = get_settings()
+
 	app = App()
 	app.run()
