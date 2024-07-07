@@ -14,7 +14,7 @@ def get_settings():
 	circle = clock_params.get("Circle")
 	am = clock_params.get("AM")
 	seconds = clock_params.get("Seconds")
-	return (am, seconds, size)
+	return (am, seconds, size, circle)
 
 class Clock_face():
 	def __init__(self, app):
@@ -72,7 +72,25 @@ class Time_char():
 
 	def draw(self, app):
 		# Rainbow 1
-		[pygame.draw.rect(app.display, (255 // app.row * (self.x + x1), 255 // app.col * (self.y + y1), 255 // app.width // app.height * (self.x + x1) * (self.y + y1)), ((self.x + x1) * app.cell_size + 1, (self.y + y1) * app.cell_size + 1, app.cell_size - 2, app.cell_size - 2)) for x1, y1 in self.char]
+		if not CIRCLE:
+			[pygame.draw.rect(app.display,
+							  (255 // app.row * (self.x + x1),
+							   255 // app.col * (self.y + y1),
+							   255 // app.width // app.height * (self.x + x1) * (self.y + y1)),
+							  ((self.x + x1) * app.cell_size + 1,
+							   (self.y + y1) * app.cell_size + 1,
+							   app.cell_size - 2,
+							   app.cell_size - 2))
+			 for x1, y1 in self.char]
+		else:
+			[pygame.draw.circle(app.display,
+								(255 // app.row * (self.x + x1),
+								 255 // app.col * (self.y + y1),
+								 255 // app.width // app.height * (self.x + x1) * (self.y + y1)),
+								((self.x + x1) * app.cell_size + app.cell_size // 2,
+								 (self.y + y1) * app.cell_size + app.cell_size // 2),
+								app.cell_size // 2 - 1)
+			 for x1, y1 in self.char]
 		# Rainbow 2
 		# [pygame.draw.rect(app.display, (255 // app.row * self.x, 255 // app.col * (self.y + 6), 255 // app.width // app.height * (self.x + x1) * (self.y + y1)), ((self.x + x1) * app.cell_size + 1, (self.y + y1) * app.cell_size + 1, app.cell_size - 2, app.cell_size - 2)) for x1, y1 in self.char]
 		# Random color 
@@ -108,7 +126,7 @@ if __name__ == '__main__':
 	# SECONDS = 1  # seconds on the clock (1 or 0)
 	# CELL_SIZE = 35
 
-	USA_TIME_FORMAT, SECONDS, CELL_SIZE = get_settings()
+	USA_TIME_FORMAT, SECONDS, CELL_SIZE, CIRCLE = get_settings()
 
 	app = App()
 	app.run()
