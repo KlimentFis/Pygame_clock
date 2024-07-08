@@ -1,5 +1,4 @@
 from random import randint, choice
-import pygame
 from datetime import datetime
 import pygame
 import json
